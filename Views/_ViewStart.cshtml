@@ -1,3 +1,6 @@
 ﻿@{
-    Layout = "_Layout";
+    if (ViewData["UsuarioAutenticado"] == null)
+        Layout = "_Unauthenticated";
+    else
+        Layout = "_Layout";
 }

@@ -16,3 +16,14 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.login {
+    width: 30rem;
+}
+
+.centralizar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}

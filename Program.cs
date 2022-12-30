@@ -20,8 +20,15 @@ app.UseRouting();
 
 app.UseAuthorization();
 
+#region Rotas
+
+//app.MapControllerRoute(
+//    name: "default",
+//    pattern: "{controller=Home}/{action=Index}/{id?}");
+
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Login}/{action=Index}/{id?}");
+#endregion
 
 app.Run();
