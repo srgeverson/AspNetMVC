@@ -27,6 +27,10 @@ app.UseAuthorization();
 //    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.MapControllerRoute(
+    name: "logar",
+    pattern: "{controller=Login}/{action=Logar}");
+
+app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Login}/{action=Index}/{id?}");
 #endregion

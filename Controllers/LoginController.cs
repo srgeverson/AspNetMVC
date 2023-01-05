@@ -21,10 +21,25 @@ namespace AspNetMVC.Controllers
             return View();
         }
 
+        [AllowAnonymous]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        public IActionResult Error(String mensagem)
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            TempData["MensagemAlerta"] = mensagem;
+            return View();
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        public void Logar(UsuarioLoginModel usuarioLoginModel)
+        {
+            if (usuarioLoginModel != null && usuarioLoginModel.Email != null && usuarioLoginModel.Email.Equals("geversonjosedesouza@gmail.com"))
+            {
+                ViewData["UsuarioAutenticado"] = usuarioLoginModel;
+                Response.Redirect("/Home");
+            }
+            else
+                Error(String.Format("Usuário ou senha inválidos!"));
         }
     }
 }

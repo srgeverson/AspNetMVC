@@ -1,17 +1,33 @@
 ﻿@{
     ViewData["Title"] = "Login";
+    @model UsuarioLoginModel;
+
 }
 <div class="card login mt-5">
-        <h5 class="card-title text-center">Acesso Restrito</h5>
+    @if (TempData["MensagemErro"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show m-2" role="alert">
+            <strong>Ocorreu um erro!</strong> @TempData["MensagemErro"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    else @if (TempData["MensagemAlerta"] != null)
+    {
+        <div class="alert alert-warning alert-dismissible fade show m-2" role="alert">
+            <strong>Ocorreu um erro!</strong> @TempData["MensagemAlerta"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    <h5 class="card-title text-center">Acesso Restrito</h5>
     <div class="card-body">
-        <form>
+        <form action="/Login/Logar" method="post">
             <div class="input-group mb-3">
                 <span id="lblEmail" class="input-group-text">Login</span>
-                <input type="email" class="form-control" placeholder="Login" aria-label="Login" aria-describedby="basic-addon1">
+                @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control" } })
             </div>
             <div class="input-group mb-3">
                 <label id="lblSenha" class="input-group-text">Senha</label>
-                <input id="txtSenha" type="password" class="form-control" placeholder="Senha" aria-label="Email" aria-describedby="basic-addon2" />
+                @Html.EditorFor(model => model.Senha, new { htmlAttributes = new { @class = "form-control" } })
             </div>
             <div class="text-center">
                 <button type="submit" class="btn btn-primary">Entrar</button>
