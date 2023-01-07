@@ -1,3 +1,4 @@
+using AspNetMVC.Helpers;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Mvc.Authorization;
@@ -26,6 +27,17 @@ builder.Services
         options.Secure = CookieSecurePolicy.Always;
     });
 
+//IoC
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddSingleton<ISessaoUsuarioHelper, SessaoUsuarioHelper>();
+
+//Session
+builder.Services.AddSession(s =>
+{
+    s.Cookie.HttpOnly = true;
+    s.Cookie.IsEssential = true;
+});
+
 builder.Services.AddMvc(options => options.Filters.Add(new AuthorizeFilter()));
 
 builder.Services.AddControllersWithViews();
@@ -51,6 +63,8 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+
+app.UseSession();
 
 #region Rotas
 

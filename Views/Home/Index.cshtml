@@ -1,7 +1,27 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
-
+@if (TempData["MensagemErro"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show m-2" role="alert">
+        <strong>Erro!</strong> @TempData["MensagemErro"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+else @if (TempData["MensagemAlerta"] != null)
+{
+    <div class="alert alert-warning alert-dismissible fade show m-2" role="alert">
+        <strong>Atênção!</strong> @TempData["MensagemAlerta"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+else @if (TempData["MensagemSucesso"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show m-2" role="alert">
+        <strong>Sucesso!</strong> @TempData["MensagemSucesso"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>

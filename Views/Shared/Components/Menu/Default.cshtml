@@ -1,0 +1,20 @@
+﻿@model LoginViewModel
+<div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+    <ul class="navbar-nav flex-grow-1">
+    </ul>
+    <div class="d-flex nav-item dropstart">
+        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            @if (@Model.Nome == null)
+            {
+                <span>Não identificado</span>
+            }
+            else
+            {
+                @Model.Nome
+            }
+        </a>
+        <ul class="dropdown-menu">
+            <li><a class="nav-link text-dark" asp-area="" asp-controller="Login" asp-action="Sair">Sair</a></li>
+        </ul>
+    </div>
+</div>

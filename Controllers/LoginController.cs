@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using AspNetMVC.Helpers;
 
 namespace AspNetMVC.Controllers
 {
@@ -11,16 +12,21 @@ namespace AspNetMVC.Controllers
     public class LoginController : Controller
     {
         private readonly ILogger<LoginController> _logger;
+        private readonly ISessaoUsuarioHelper _sessaoUsuarioHelper;
 
-        public LoginController(ILogger<LoginController> logger)
+        public LoginController(ILogger<LoginController> logger, ISessaoUsuarioHelper sessaoUsuarioHelper)
         {
             _logger = logger;
+            _sessaoUsuarioHelper = sessaoUsuarioHelper;
         }
 
         [AllowAnonymous]
         public IActionResult Index()
         {
-            return View();
+            if (_sessaoUsuarioHelper.BuscarSessao() == null)
+                return View();
+            else
+                return RedirectToAction("Index", "Home");
         }
 
         [AllowAnonymous]
@@ -51,6 +57,7 @@ namespace AspNetMVC.Controllers
 
                     if (loginViewModel != null && loginViewModel.Email != null && loginViewModel.Email.Equals("geversonjosedesouza@gmail.com"))
                     {
+                        _sessaoUsuarioHelper.CriarSessao(loginViewModel);
                         TempData["MensagemSucesso"] = String.Format("Usuário logado com sucesso!");
                         return RedirectToAction("Index", "Home");
                     }
@@ -78,6 +85,7 @@ namespace AspNetMVC.Controllers
         }
         public async Task<IActionResult> Sair()
         {
+            _sessaoUsuarioHelper.RemoverSessao();
             await HttpContext.SignOutAsync();
             TempData["MensagemSucesso"] = "Secessão encerrada!";
             return View("Index");
