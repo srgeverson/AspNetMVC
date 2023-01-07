@@ -33,35 +33,54 @@ namespace AspNetMVC.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        public async Task Logar(UsuarioLoginModel usuarioLoginModel)
+        public async Task<IActionResult> Logar(LoginViewModel loginViewModel)
         {
-            var claims = new List<Claim> { new Claim(ClaimTypes.Name, Guid.NewGuid().ToString()) };
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    if (loginViewModel == null || loginViewModel.Email == null)
+                        throw new ArgumentNullException("Usuário ou senha inválido");
 
-            var claimsIdentity = new ClaimsIdentity(
-              claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            var authProperties = new AuthenticationProperties();
+                    var claims = new List<Claim> { new Claim(ClaimTypes.Name, loginViewModel.Email) };
 
-            await HttpContext.SignInAsync(
-              CookieAuthenticationDefaults.AuthenticationScheme,
-              new ClaimsPrincipal(claimsIdentity),
-              authProperties);
-            
-            Response.Redirect("/Home");
-          //  return View("/Home");
+                    var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                    var authenticationProperties = new AuthenticationProperties();
 
-            //if (usuarioLoginModel != null && usuarioLoginModel.Email != null && usuarioLoginModel.Email.Equals("geversonjosedesouza@gmail.com"))
-            //{
-            //    ViewData["UsuarioAutenticado"] = usuarioLoginModel;
-            //    Response.Redirect("/Home");
-            //}
-            //else
-            //    Error(String.Format("Usuário ou senha inválidos!"));
+                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authenticationProperties);
+
+                    if (loginViewModel != null && loginViewModel.Email != null && loginViewModel.Email.Equals("geversonjosedesouza@gmail.com"))
+                    {
+                        TempData["MensagemSucesso"] = String.Format("Usuário logado com sucesso!");
+                        return RedirectToAction("Index", "Home");
+                    }
+                    else
+                    {
+                        TempData["MensagemAlerta"] = String.Format("Usuário ou senha inválidos!");
+                        return RedirectToAction("Index");
+                    }
+                }
+                else
+                {
+                    TempData["MensagemAlerta"] = String.Format("Usuário e senha são obrigatórios!");
+                    return RedirectToAction("Index");
+                }
+            }
+            catch (ArgumentNullException aex)
+            {
+                TempData["MensagemAlerta"] = aex.Message;
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Error", new ErrorViewModel() { RequestId = ex.Message });
+            }
         }
-        public async Task Sair()
+        public async Task<IActionResult> Sair()
         {
             await HttpContext.SignOutAsync();
-            Response.Redirect("/Login");
-            //return View("Acessar");
+            TempData["MensagemSucesso"] = "Secessão encerrada!";
+            return View("Index");
         }
     }
 }

@@ -4,30 +4,33 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-  .AddCookie(options =>
-  {
-      options.Cookie.HttpOnly = true;
-      options.Cookie.SecurePolicy = true
-        ? CookieSecurePolicy.None : CookieSecurePolicy.Always;
-      options.Cookie.SameSite = SameSiteMode.Lax;
-      options.Cookie.Name = "SimpleTalk.AuthCookieAspNetCore";
-      options.LoginPath = "/Login";
-      options.LogoutPath = "/Home";
-  });
+#region Add services to the container.
 
-builder.Services.Configure<CookiePolicyOptions>(options =>
-{
-    options.MinimumSameSitePolicy = SameSiteMode.Strict;
-    options.HttpOnly = HttpOnlyPolicy.None;
-    options.Secure = true
-      ? CookieSecurePolicy.None : CookieSecurePolicy.Always;
-});
+builder.Services
+    .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.Cookie.SameSite = SameSiteMode.Lax;
+        options.Cookie.Name = String.Format("AuthCookieAspNetCore.{0}", AppDomain.CurrentDomain.FriendlyName.Split('.')[0]);
+        options.LoginPath = "/Login";
+        options.LogoutPath = "/Home";
+    });
+
+builder.Services
+    .Configure<CookiePolicyOptions>(options =>
+    {
+        options.MinimumSameSitePolicy = SameSiteMode.Strict;
+        options.HttpOnly = HttpOnlyPolicy.None;
+        options.Secure = CookieSecurePolicy.Always;
+    });
 
 builder.Services.AddMvc(options => options.Filters.Add(new AuthorizeFilter()));
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
+
+#endregion
 
 var app = builder.Build();
 
@@ -52,17 +55,13 @@ app.UseAuthorization();
 #region Rotas
 
 //app.MapControllerRoute(
-//    name: "sair",
-//    pattern: "{controller=Login}/{action=Sair}");
-
-app.MapControllerRoute(
-name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
-
-
-//app.MapControllerRoute(
 //    name: "default",
 //    pattern: "{controller=Login}/{action=Index}/{id?}");
+
+//app.MapControllerRoute(name: "erro", pattern: "{controller=Home}/{action=Error}");
+
+app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
+
 #endregion
 
 app.Run();
