@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using AspNetMVC.Helpers;
+using AppClassLibraryDomain.service;
 
 namespace AspNetMVC.Controllers
 {
@@ -13,11 +14,16 @@ namespace AspNetMVC.Controllers
     {
         private readonly ILogger<LoginController> _logger;
         private readonly ISessaoUsuarioHelper _sessaoUsuarioHelper;
+        private readonly IUsuarioService _usuarioService;
 
-        public LoginController(ILogger<LoginController> logger, ISessaoUsuarioHelper sessaoUsuarioHelper)
+        public LoginController(
+            ILogger<LoginController> logger, 
+            ISessaoUsuarioHelper sessaoUsuarioHelper,
+            IUsuarioService usuarioService)
         {
             _logger = logger;
             _sessaoUsuarioHelper = sessaoUsuarioHelper;
+            _usuarioService = usuarioService;
         }
 
         [AllowAnonymous]
@@ -45,8 +51,12 @@ namespace AspNetMVC.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    if (loginViewModel == null || loginViewModel.Email == null)
+                    var usuario = _usuarioService.BuscarPorEmail(loginViewModel.Email);
+                    
+                    if (usuario == null)
                         throw new ArgumentNullException("Usuário ou senha inválido");
+
+                    loginViewModel.Nome= usuario.Nome;
 
                     var claims = new List<Claim> { new Claim(ClaimTypes.Name, loginViewModel.Email) };
 

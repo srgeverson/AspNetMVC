@@ -1,7 +1,11 @@
+using AppClassLibraryDomain.DAO;
+using AppClassLibraryDomain.DAO.SQL;
+using AppClassLibraryDomain.service;
 using AspNetMVC.Helpers;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,15 +31,27 @@ builder.Services
         options.Secure = CookieSecurePolicy.Always;
     });
 
-//IoC
+#region IoC
+
+//Others
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddSingleton<ISessaoUsuarioHelper, SessaoUsuarioHelper>();
+
+//DAO
+builder.Services.AddSingleton<IUsuarioDAO>(new UsuarioSQLDAO() { UrlConnection = Environment.GetEnvironmentVariable("CONNECTION_STRING_AspNetMVC") });
+
+//Sevices
+builder.Services.AddSingleton<IUsuarioService, UsuarioService>();
+
+#endregion
 
 //Session
 builder.Services.AddSession(s =>
 {
     s.Cookie.HttpOnly = true;
     s.Cookie.IsEssential = true;
+    s.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    s.Cookie.SameSite = SameSiteMode.Lax;
 });
 
 builder.Services.AddMvc(options => options.Filters.Add(new AuthorizeFilter()));
