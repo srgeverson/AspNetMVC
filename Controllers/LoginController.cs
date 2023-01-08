@@ -15,24 +15,32 @@ namespace AspNetMVC.Controllers
         private readonly ILogger<LoginController> _logger;
         private readonly ISessaoUsuarioHelper _sessaoUsuarioHelper;
         private readonly IUsuarioService _usuarioService;
+        private readonly ISistemaService _sistemaService;
 
         public LoginController(
             ILogger<LoginController> logger, 
             ISessaoUsuarioHelper sessaoUsuarioHelper,
-            IUsuarioService usuarioService)
+            IUsuarioService usuarioService,
+            ISistemaService sistemaService)
         {
             _logger = logger;
             _sessaoUsuarioHelper = sessaoUsuarioHelper;
             _usuarioService = usuarioService;
+            _sistemaService = sistemaService;
         }
 
         [AllowAnonymous]
         public IActionResult Index()
         {
-            if (_sessaoUsuarioHelper.BuscarSessao() == null)
-                return View();
+            if (_sistemaService.Sistema("") == null)
+                return RedirectToAction("Error", "Login");
             else
-                return RedirectToAction("Index", "Home");
+            {
+                if (_sessaoUsuarioHelper.BuscarSessao() == null)
+                    return View();
+                else
+                    return RedirectToAction("Index", "Home");
+            }
         }
 
         [AllowAnonymous]

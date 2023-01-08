@@ -5,7 +5,6 @@ using AspNetMVC.Helpers;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,16 +30,20 @@ builder.Services
         options.Secure = CookieSecurePolicy.Always;
     });
 
-#region IoC
+#region DI
 
 //Others
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddSingleton<ISessaoUsuarioHelper, SessaoUsuarioHelper>();
 
 //DAO
-builder.Services.AddSingleton<IUsuarioDAO>(new UsuarioSQLDAO() { UrlConnection = Environment.GetEnvironmentVariable("CONNECTION_STRING_AspNetMVC") });
+var conexao = Environment.GetEnvironmentVariable("CONNECTION_STRING_AspNetMVC");
+
+builder.Services.AddSingleton<ISistemaDAO>(new SistemaSQLDAO() { UrlConnection = conexao });
+builder.Services.AddSingleton<IUsuarioDAO>(new UsuarioSQLDAO() { UrlConnection = conexao });
 
 //Sevices
+builder.Services.AddSingleton<ISistemaService, SistemaService>();
 builder.Services.AddSingleton<IUsuarioService, UsuarioService>();
 
 #endregion
